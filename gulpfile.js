@@ -37,7 +37,7 @@ gulp.task('watch', ['compile'], () => {
 
 gulp.task('run', () => {
   var stream = nodemon({
-                 script: 'bin/www.js'
+                 script: './dist/bin/www.js'
             });
   return stream;
 });
