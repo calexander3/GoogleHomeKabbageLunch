@@ -1,6 +1,6 @@
 import * as express from 'express';
-import { GoogleHomeRequest } from '../models/google-home-request';
 import { MenuItem } from '../models/menu-item';
+import { GoogleHomeRequest, Fulfillment } from "../models/google-home";
 import https = require('https');
 
 export let router = express.Router();
@@ -24,19 +24,33 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
   let today = new Date();
   let request: GoogleHomeRequest = req.body;
 
-  let response: GoogleHomeResponse = {
+  let response: Fulfillment = {
     speech: '',
     source: 'google-home-kabbage-lunch',
     displayText: ''
   };
 
   let date = request.result.parameters.date || (today.getFullYear() + '-' +  ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2));
+
+  console.log(date);
+
   getContent(lunchApiUrl + date)
   .then((jsonData) => {
     let menuItem: MenuItem = JSON.parse(jsonData);
     let friendlyMenu = menuItem.menu.split(";").join(',').split("|").join('');
     response.speech = friendlyMenu;
     response.displayText = menuItem.menu;
+    response.messages = [
+        {
+          type: 0,
+          speech: friendlyMenu
+        },
+        {
+          imageUrl: menuItem.image,
+          type: 3
+        }
+    ];
+    
     res.send(response);
   })
   .catch((statusCode) =>{

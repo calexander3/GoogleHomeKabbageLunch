@@ -29,9 +29,12 @@ export interface Parameters {
 export interface Fulfillment {
   messages?: (MessagesEntity)[] | null;
   speech: string;
+  displayText: string;
+  source: string;
 }
 export interface MessagesEntity {
-  speech: string;
+  speech?: string;
+  imageUrl?: string;
   type: number;
 }
 export interface Metadata {
