@@ -26,13 +26,18 @@ gulp.task('copy-static', ['clean'], function() {
 });
 
 gulp.task('watch', ['compile'], () => {
-  //gulp.watch('src/**/*.ts', ['compile','node bin/www']);
-
   var stream = nodemon({
                  script: 'bin/www'
                , ext: 'ts'
                , watch: '.'
                , tasks: ['compile']
+            });
+  return stream;
+});
+
+gulp.task('run', () => {
+  var stream = nodemon({
+                 script: 'bin/www.js'
             });
   return stream;
 });
