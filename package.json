@@ -2,8 +2,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www.js",
-    "watch": "./node_modules/.bin/gulp watch",
+    "start": "./node_modules/.bin/gulp watch",
     "build": "./node_modules/.bin/gulp build",
     "postinstall": "./node_modules/.bin/typings install"
   },
@@ -18,7 +17,6 @@
     "gulp-nodemon": "^2.2.1",
     "gulp-typescript": "^3.1.4",
     "morgan": "~1.6.1",
-    "nodemon": "^1.11.0",
     "tslint-config-standard": "^2.0.0",
     "typings": "^2.1.0"
   },
