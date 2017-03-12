@@ -1,7 +1,8 @@
 import * as express from 'express';
+import * as basicAuth from 'basic-auth';
 import { MenuItem } from '../models/menu-item';
 import { GoogleHomeRequest, Fulfillment } from "../models/google-home";
-import https = require('https');
+import * as https from 'https';
 
 export let router = express.Router();
 
@@ -20,6 +21,16 @@ router.delete('/', (req: express.Request, res: express.Response, next: express.N
 });
 
 router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if(!req.headers.authorization){
+    res.sendStatus(401);
+    return;
+  }
+  const credentials = basicAuth(req);
+  if(credentials.name !== process.env.BASICUSER || credentials.pass !== process.env.BASICPASS){
+    res.sendStatus(401);
+    return;
+  }
+
   res.setHeader('content-type', 'application/json');
   let today = new Date();
   let request: GoogleHomeRequest = req.body;
