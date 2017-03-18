@@ -1,10 +1,13 @@
 import * as express from 'express';
 import * as basicAuth from 'basic-auth';
+import * as Url from 'url';
 import { MenuItem } from '../models/menu-item';
 import { GoogleHomeRequest, Fulfillment } from "../models/google-home";
+import { ApiRequestService } from "../services/api-request";
 import * as https from 'https';
 
 export let router = express.Router();
+let apiRequestService = new ApiRequestService();
 
 const lunchApiUrl = 'https://lunch.kabbage.com/api/v2/lunches/';
 
@@ -43,9 +46,8 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 
   let date = request.result.parameters.date || (today.getFullYear() + '-' +  ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2));
 
-  getContent(lunchApiUrl + date)
-  .then((jsonData) => {
-    let menuItem: MenuItem = JSON.parse(jsonData);
+  apiRequestService.getContent<MenuItem>(Url.parse(lunchApiUrl + date))
+  .then((menuItem) => {
     let friendlyMenu = menuItem.menu.split(";").join(',').split("|").join('');
     response.speech = friendlyMenu;
     response.displayText = menuItem.menu;
@@ -75,17 +77,3 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     res.send(response);
   }); 
 });
-
-function getContent(url: string): Promise<any> {
-  return new Promise((resolve:any, reject:any) => {
-    const request = https.get(url, (response: any) => {
-      if (response.statusCode < 200 || response.statusCode > 299) {
-        reject(response.statusCode);
-      }
-      const body: string[] = [];
-      response.on('data', (chunk: string) => body.push(chunk));
-      response.on('end', () => resolve(body.join('')));
-    });
-    request.on('error', (err: any) => reject(err))
-  });
-}
